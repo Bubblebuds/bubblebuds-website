@@ -1,0 +1,133 @@
+{
+  "entities": {
+    "Article": {
+      "title": "Article",
+      "description": "An article or blog post.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "date": { "type": "string" },
+        "readTime": { "type": "string" },
+        "image": { "type": "string" },
+        "colorBox": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["title", "excerpt", "category", "date", "readTime", "image", "createdAt", "updatedAt"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "A service offered by the babyspa.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "string" },
+        "duration": { "type": "string" },
+        "iconType": { "type": "string" },
+        "isPopular": { "type": "boolean" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["name", "description", "price", "duration", "iconType", "isPopular", "createdAt", "updatedAt"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "A review from a customer.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "text": { "type": "string" },
+        "rating": { "type": "number" },
+        "avatarUrl": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["name", "role", "text", "rating", "createdAt", "updatedAt"]
+    },
+    "HeroImage": {
+      "title": "Hero Image",
+      "description": "An image for the hero slideshow.",
+      "type": "object",
+      "properties": {
+        "imageUrl": { "type": "string" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["imageUrl", "order", "createdAt", "updatedAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Admin user to manage the content.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" }
+      },
+      "required": ["email"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Global settings like social links and contact info.",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "value": { "type": "string" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["key", "value", "updatedAt"]
+    },
+    "Reservation": {
+      "title": "Reservation",
+      "description": "A customer booking.",
+      "type": "object",
+      "properties": {
+        "parentName": { "type": "string" },
+        "childName": { "type": "string" },
+        "phone": { "type": "string" },
+        "memberId": { "type": "string" },
+        "service": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["parentName", "childName", "phone", "service", "date", "time", "status", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/articles/{articleId}": {
+      "schema": "Article",
+      "description": "Blog articles."
+    },
+    "/services/{serviceId}": {
+      "schema": "Service",
+      "description": "Available services."
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": "Testimonial",
+      "description": "Customer testimonials."
+    },
+    "/heroImages/{heroImageId}": {
+      "schema": "HeroImage",
+      "description": "Images for the home page hero slider."
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "List of admin users."
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "App settings."
+    },
+    "/reservations/{reservationId}": {
+      "schema": "Reservation",
+      "description": "User reservations."
+    }
+  }
+}
