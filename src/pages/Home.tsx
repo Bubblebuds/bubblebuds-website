@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, ArrowRight, Star, Baby, UserCircle2, Sparkles } from 'lucide-react';
+import { Calendar, ArrowRight, Star, Baby, UserCircle2, Sparkles, ImagePlus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-
-const DEFAULT_HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1544126592-807ade215a0b?q=80&w=2070&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=2070&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=2070&auto=format&fit=crop'
-];
 
 const DEFAULT_TESTIMONIALS = [
   {
@@ -40,7 +34,7 @@ const DEFAULT_TESTIMONIALS = [
 
 export default function Home() {
   const [currentImage, setCurrentImage] = useState(0);
-  const [heroImages, setHeroImages] = useState<string[]>(DEFAULT_HERO_IMAGES);
+  const [heroImages, setHeroImages] = useState<string[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>(DEFAULT_TESTIMONIALS);
   const [services, setServices] = useState<any[]>([]);
 
@@ -49,25 +43,21 @@ export default function Home() {
     const unsubImages = onSnapshot(qImages, (snapshot) => {
       const dbImages = snapshot.docs.map(doc => doc.data().imageUrl);
       if (dbImages.length > 0) setHeroImages(dbImages);
-      else setHeroImages(DEFAULT_HERO_IMAGES);
+      else setHeroImages([]);
     }, (error) => handleFirestoreError(error, OperationType.GET, 'heroImages'));
     
     const qTestimonials = query(collection(db, 'testimonials'), orderBy('createdAt', 'desc'));
     const unsubTestimonials = onSnapshot(qTestimonials, (snapshot) => {
       const dbTestimonials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       if (dbTestimonials.length > 0) setTestimonials(dbTestimonials);
-      else setTestimonials(DEFAULT_TESTIMONIALS);
+      else setTestimonials([]);
     }, (error) => handleFirestoreError(error, OperationType.GET, 'testimonials'));
 
     const qServices = query(collection(db, 'services'), orderBy('createdAt', 'asc'));
     const unsubServices = onSnapshot(qServices, (snapshot) => {
        const dbServices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
        if (dbServices.length > 0) setServices(dbServices);
-       else setServices([
-         { id: '1', name: 'Baby Spa & Pijat', description: 'Meningkatkan motorik dan memberikan relaksasi maksimal untuk si kecil dengan terapis bersertifikat.', iconType: 'Baby' },
-         { id: '2', name: 'Perawatan Ibu Hamil', description: 'Meringankan ketegangan otot dan meningkatkan sirkulasi darah selama masa kehamilan yang indah.', iconType: 'UserCircle2', isPopular: true },
-         { id: '3', name: 'Mom & Kids Package', description: 'Nikmati waktu berkualitas bersama anak dengan perawatan spa bersama yang menyegarkan.', iconType: 'Sparkles' }
-       ]);
+       else setServices([]);
     }, (error) => handleFirestoreError(error, OperationType.GET, 'services'));
 
     return () => {
@@ -120,16 +110,22 @@ export default function Home() {
             <div className="relative">
               <div className="relative rounded-[2rem] overflow-hidden float-shadow z-10 border-4 border-white h-[500px]">
                 <AnimatePresence mode="wait">
-                  <motion.img 
-                    key={currentImage}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1 }}
-                    className="absolute inset-0 w-full h-full object-cover" 
-                    src={heroImages[currentImage]}
-                    alt="Bubblebuds Hero Slide"
-                  />
+                  {heroImages.length > 0 ? (
+                    <motion.img 
+                      key={currentImage}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 1 }}
+                      className="absolute inset-0 w-full h-full object-cover" 
+                      src={heroImages[currentImage]}
+                      alt="Bubblebuds Hero Slide"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full bg-surface-container-high flex items-center justify-center">
+                      <ImagePlus size={48} className="text-on-surface-variant opacity-50" />
+                    </div>
+                  )}
                 </AnimatePresence>
                 <div className="absolute bottom-6 left-6 glass-panel p-4 rounded-2xl flex items-center gap-4 z-20">
                   <div className="bg-secondary-container text-on-secondary-container w-12 h-12 rounded-full flex items-center justify-center">
@@ -148,6 +144,7 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
+      {services.length > 0 && (
       <section id="layanan" className="py-24 bg-surface-container-low relative">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16 space-y-4">
@@ -188,8 +185,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Testimonials */}
+      {testimonials.length > 0 && (
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-on-surface mb-12">Cerita Bahagia Mereka</h2>
@@ -239,6 +238,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 }

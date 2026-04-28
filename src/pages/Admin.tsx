@@ -50,6 +50,9 @@ export default function Admin() {
           >
             Login dengan Google
           </button>
+          <p className="text-xs text-on-surface-variant text-center mt-4">
+            Jika popup login terblokir, mohon buka aplikasi ini di tab baru (Gunakan ikon di kanan atas).
+          </p>
         </div>
       </div>
     );
@@ -115,6 +118,9 @@ function ServicesAdmin() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('Mulai dari Rp. 100.000');
+  const [duration, setDuration] = useState('45 Menit');
+  const [isPopular, setIsPopular] = useState(false);
   
   useEffect(() => {
     const q = query(collection(db, 'services'), orderBy('createdAt', 'asc'));
@@ -129,22 +135,32 @@ function ServicesAdmin() {
     if (!name.trim() || !description.trim()) return;
     try {
       if (editingId) {
-        await updateDoc(doc(db, 'services', editingId), { name, description, updatedAt: Date.now() });
+        await updateDoc(doc(db, 'services', editingId), { 
+          name, 
+          description, 
+          price,
+          duration,
+          isPopular,
+          updatedAt: Date.now() 
+        });
         setEditingId(null);
       } else {
         await addDoc(collection(db, 'services'), {
           name,
           description,
-          price: 'Mulai dari Rp. 100.000',
-          duration: '45 Menit',
+          price,
+          duration,
           iconType: 'Star',
-          isPopular: false,
+          isPopular,
           createdAt: Date.now(),
           updatedAt: Date.now()
         });
       }
       setName('');
       setDescription('');
+      setPrice('Mulai dari Rp. 100.000');
+      setDuration('45 Menit');
+      setIsPopular(false);
     } catch (e) {
       handleFirestoreError(e, editingId ? OperationType.UPDATE : OperationType.CREATE, 'services');
     }
@@ -154,12 +170,18 @@ function ServicesAdmin() {
     setEditingId(svc.id);
     setName(svc.name);
     setDescription(svc.description);
+    setPrice(svc.price || '');
+    setDuration(svc.duration || '');
+    setIsPopular(svc.isPopular || false);
   };
   
   const cancelEdit = () => {
     setEditingId(null);
     setName('');
     setDescription('');
+    setPrice('Mulai dari Rp. 100.000');
+    setDuration('45 Menit');
+    setIsPopular(false);
   };
 
   const removeService = async (id: string) => {
@@ -220,6 +242,31 @@ function ServicesAdmin() {
             rows={3}
             className="w-full bg-surface border border-outline-variant/50 rounded-xl px-4 py-2 resize-none"
           />
+          <div className="grid grid-cols-2 gap-2">
+            <input 
+              type="text" 
+              value={price} 
+              onChange={(e) => setPrice(e.target.value)} 
+              placeholder="Harga (mis. Mulai dari Rp. 100.000)" 
+              className="w-full bg-surface border border-outline-variant/50 rounded-xl px-4 py-2"
+            />
+            <input 
+              type="text" 
+              value={duration} 
+              onChange={(e) => setDuration(e.target.value)} 
+              placeholder="Durasi (mis. 45 Menit)" 
+              className="w-full bg-surface border border-outline-variant/50 rounded-xl px-4 py-2"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm text-on-surface cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked={isPopular} 
+              onChange={(e) => setIsPopular(e.target.checked)} 
+              className="rounded border-outline-variant text-primary focus:ring-primary"
+            />
+            Tandai sebagai Layanan Populer
+          </label>
           <div className="flex gap-2 mt-2">
             <button 
               onClick={saveService} 
@@ -605,7 +652,7 @@ function ArticlesAdmin() {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
-  const [excerpt, setExcerpt] = useState('');
+  const [content, setContent] = useState('');
   const [image, setImage] = useState('');
   
   useEffect(() => {
@@ -618,19 +665,34 @@ function ArticlesAdmin() {
   }, []);
 
   const saveArticle = async () => {
-    if (!title.trim() || !image.trim() || !excerpt.trim()) return;
+    if (!title.trim() || !image.trim() || !content.trim()) return;
+    
+    const wordCount = content.trim().split(/\s+/).length;
+    if (wordCount > 2500) {
+      alert(`Artikel terlalu panjang, batas maksimal adalah 2500 kata. (Saat ini: ${wordCount} kata)`);
+      return;
+    }
+
+    const excerptTxt = content.length > 150 ? content.substring(0, 150) + '...' : content;
+    
     try {
       if (editingId) {
-        await updateDoc(doc(db, 'articles', editingId), { title, excerpt, image, updatedAt: Date.now() });
+        await updateDoc(doc(db, 'articles', editingId), { 
+          title, 
+          excerpt: excerptTxt, 
+          content,
+          image, 
+          updatedAt: Date.now() 
+        });
         setEditingId(null);
       } else {
         await addDoc(collection(db, 'articles'), {
           title,
-          excerpt,
-          content: '<p>Konten baru</p>',
+          excerpt: excerptTxt,
+          content,
           category: 'Umum',
           date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-          readTime: '3 Menit',
+          readTime: Math.ceil(wordCount / 200) + ' Menit',
           image,
           colorBox: 'bg-primary-container text-on-primary-container',
           createdAt: Date.now(),
@@ -638,7 +700,7 @@ function ArticlesAdmin() {
         });
       }
       setTitle('');
-      setExcerpt('');
+      setContent('');
       setImage('');
     } catch (e) {
       handleFirestoreError(e, editingId ? OperationType.UPDATE : OperationType.CREATE, 'articles');
@@ -648,14 +710,14 @@ function ArticlesAdmin() {
   const startEdit = (art: any) => {
     setEditingId(art.id);
     setTitle(art.title);
-    setExcerpt(art.excerpt);
+    setContent(art.content || art.excerpt || '');
     setImage(art.image);
   };
   
   const cancelEdit = () => {
     setEditingId(null);
     setTitle('');
-    setExcerpt('');
+    setContent('');
     setImage('');
   };
 
@@ -705,13 +767,18 @@ function ArticlesAdmin() {
           placeholder="Judul Artikel" 
           className="w-full bg-surface border border-outline-variant/50 rounded-xl px-4 py-2"
         />
-        <input 
-          type="text" 
-          value={excerpt} 
-          onChange={(e) => setExcerpt(e.target.value)} 
-          placeholder="Kutipan Singkat" 
-          className="w-full bg-surface border border-outline-variant/50 rounded-xl px-4 py-2"
-        />
+        <div>
+          <textarea 
+            value={content} 
+            onChange={(e) => setContent(e.target.value)} 
+            placeholder="Isi Artikel (Maks. 2500 kata)" 
+            rows={10}
+            className="w-full bg-surface border border-outline-variant/50 rounded-xl px-4 py-2 resize-none"
+          />
+          <span className="text-xs text-on-surface-variant text-right block mt-1">
+            {content.trim().split(/\s+/).filter(w => w.length > 0).length} / 2500 kata
+          </span>
+        </div>
         <div className="py-1">
           <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider block mb-2">Gambar Sampul</label>
           <ImageUploader value={image} onChange={setImage} placeholder="Klik untuk upload gambar..." />
@@ -719,7 +786,7 @@ function ArticlesAdmin() {
         <div className="flex gap-2 mt-2">
           <button 
             onClick={saveArticle} 
-            disabled={!title.trim() || !image.trim() || !excerpt.trim()}
+            disabled={!title.trim() || !image.trim() || !content.trim()}
             className="flex-1 bg-primary text-white py-2 rounded-xl hover:bg-[#005d51] disabled:opacity-50 transition-colors font-bold flex justify-center items-center gap-2"
           >
             <Save size={18} /> Simpan

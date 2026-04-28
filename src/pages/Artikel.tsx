@@ -73,7 +73,7 @@ export default function Artikel() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {articles.map((article) => (
-          <article key={article.id} className="bg-surface rounded-[2rem] overflow-hidden ambient-shadow flex flex-col group border border-outline-variant/20 hover:border-primary/30 transition-all duration-300">
+          <Link to={`/artikel/${article.id}`} key={article.id} className="bg-surface rounded-[2rem] overflow-hidden ambient-shadow flex flex-col group border border-outline-variant/20 hover:border-primary/30 transition-all duration-300">
             <div className="h-48 overflow-hidden relative">
               <img 
                 src={article.image} 
@@ -99,12 +99,12 @@ export default function Artikel() {
                 {article.excerpt}
               </p>
               
-              <Link to="#" className="font-[Lexend] text-xs font-semibold tracking-wide uppercase text-primary flex items-center gap-1 w-fit group/link">
+              <div className="font-[Lexend] text-xs font-semibold tracking-wide uppercase text-primary flex items-center gap-1 w-fit group/link">
                 Baca Selengkapnya 
                 <ChevronRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
-              </Link>
+              </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
 

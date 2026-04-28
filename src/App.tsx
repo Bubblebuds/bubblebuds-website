@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Profil from './pages/Profil';
 import Lokasi from './pages/Lokasi';
 import Artikel from './pages/Artikel';
+import ArtikelDetail from './pages/ArtikelDetail';
 import Reservasi from './pages/Reservasi';
 import Admin from './pages/Admin';
 
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/profil" element={<Profil />} />
             <Route path="/lokasi" element={<Lokasi />} />
             <Route path="/artikel" element={<Artikel />} />
+            <Route path="/artikel/:id" element={<ArtikelDetail />} />
             <Route path="/reservasi" element={<Reservasi />} />
             <Route path="/admin" element={<Admin />} />
           </Routes>

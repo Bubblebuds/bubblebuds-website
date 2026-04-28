@@ -4,12 +4,12 @@ import { useSettings } from '../hooks/useSettings';
 export default function Lokasi() {
   const { getSetting } = useSettings();
 
-  const alamatKlinik = getSetting('alamat_klinik', 'Jl. Bahagia Selalu No. 123, Kecamatan Senyum Indah, Kota Ceria, DKI Jakarta 12345');
-  const jamSeninJumat = getSetting('jam_senin_jumat', '09.00 - 18.00 WIB');
-  const jamSabtuMinggu = getSetting('jam_sabtu_minggu', '08.00 - 19.00 WIB');
-  const telepon = getSetting('telepon', '+62 812 3456 7890');
-  const email = getSetting('email', 'halo@bubblebuds.id');
-  const iframeMap = getSetting('iframe_map', 'https://www.openstreetmap.org/export/embed.html?bbox=106.81577682495119%2C-6.230718556637384%2C106.82822227478029%2C-6.222248550796035&layer=mapnik');
+  const alamatKlinik = getSetting('alamat_klinik', 'Jl. Manggar nomor 86 Tegalsari, Kecamatan Ambulu, Kabupaten Jember');
+  const jamOperasional = getSetting('jam_operasional', 'Sabtu - Kamis : 08.00 - 17.00');
+  const telepon = getSetting('telepon', '+62 851 3436 3262');
+  const email = getSetting('email', 'admin@bubblebudsbabyspa.com');
+  // Use simple embedded OSM for the map at requested coordinates.
+  const iframeMap = getSetting('iframe_map', 'https://www.openstreetmap.org/export/embed.html?bbox=113.600,-8.347,113.603,-8.345&layer=mapnik&marker=-8.34660,113.60100');
 
   return (
     <div className="animate-in fade-in duration-500 py-16 px-6 lg:px-8 max-w-7xl mx-auto">
@@ -44,9 +44,8 @@ export default function Lokasi() {
             <div>
               <h3 className="text-xl font-bold text-on-surface mb-2">Jam Operasional</h3>
               <p className="text-base text-on-surface-variant leading-relaxed">
-                <span className="block mb-1">Senin - Jumat: {jamSeninJumat}</span>
-                <span className="block mb-1">Sabtu - Minggu: {jamSabtuMinggu}</span>
-                <span className="block text-primary font-medium mt-2">*Libur pada hari besar nasional tertentu</span>
+                <span className="block mb-1">{jamOperasional}</span>
+                <span className="block text-primary font-medium mt-2">*Jumat Libur</span>
               </p>
             </div>
           </div>

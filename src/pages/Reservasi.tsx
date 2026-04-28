@@ -199,11 +199,14 @@ export default function Reservasi() {
                 </label>
                 <select required value={time} onChange={e => setTime(e.target.value)} className="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none">
                   <option value="">Pilih Waktu</option>
+                  <option value="08:00">08:00 WIB</option>
                   <option value="09:00">09:00 WIB</option>
+                  <option value="10:00">10:00 WIB</option>
                   <option value="11:00">11:00 WIB</option>
                   <option value="13:00">13:00 WIB</option>
+                  <option value="14:00">14:00 WIB</option>
                   <option value="15:00">15:00 WIB</option>
-                  <option value="17:00">17:00 WIB</option>
+                  <option value="16:00">16:00 WIB</option>
                 </select>
               </div>
             </div>
