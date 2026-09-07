@@ -52,7 +52,7 @@ export default function Footer() {
             <img 
               alt={brandName}
               className="h-16 w-auto object-contain" 
-              src="https://lh3.googleusercontent.com/aida/ADBb0ugBrQrvLho_R6FjOoZ0ooWr06AWhPhAC1kcomBqecPvcUWPux3R_jIQOwCC2mkvNz7caNVV2HgBtxdRwtIF0RUrvS46nYS6jZh80tW-vPMvjQqnJfxYFn5gia7mOOKdt23MN7jgOs77P_pezTAmWVgkAMCLjrpg9HhQ_WA8VIXHOqO0dAq7Z0KNs2-cmNxxcNvXF5fSF4N0wyTJJsxca7-Ro-xEVMD-uIh7co-F8HwJiOLwo1YAIBc5bFbVje7fF0fs_69tP-1fpg"
+              src="/logo.png"
             />
           </Link>
         </div>

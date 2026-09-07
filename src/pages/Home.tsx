@@ -4,6 +4,8 @@ import { Calendar, ArrowRight, Star, Baby, UserCircle2, Sparkles, ImagePlus } fr
 import { motion, AnimatePresence } from 'motion/react';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import AdNativeBanner from '../components/AdNativeBanner';
+import AdDirectPromo from '../components/AdDirectPromo';
 
 const DEFAULT_TESTIMONIALS = [
   {
@@ -34,6 +36,7 @@ const DEFAULT_TESTIMONIALS = [
 
 export default function Home() {
   const [currentImage, setCurrentImage] = useState(0);
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [heroImages, setHeroImages] = useState<string[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>(DEFAULT_TESTIMONIALS);
   const [services, setServices] = useState<any[]>([]);
@@ -74,6 +77,21 @@ export default function Home() {
     }, 5000); // 5 seconds per slide
     return () => clearInterval(timer);
   }, [heroImages]);
+
+  useEffect(() => {
+    if (testimonials.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentTestimonialIndex((prev) => (prev + 1) % testimonials.length);
+    }, 10000); // 10 seconds per slide
+    return () => clearInterval(timer);
+  }, [testimonials]);
+
+  const visibleTestimonials = [];
+  if (testimonials.length > 0) {
+    for (let i = 0; i < Math.min(3, testimonials.length); i++) {
+      visibleTestimonials.push(testimonials[(currentTestimonialIndex + i) % testimonials.length]);
+    }
+  }
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -187,16 +205,30 @@ export default function Home() {
       </section>
       )}
 
+      {/* Native Sponsorship Banner */}
+      <AdNativeBanner />
+
+      {/* Premium Direct Promo Banner */}
+      <AdDirectPromo />
+
       {/* Testimonials */}
       {testimonials.length > 0 && (
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-on-surface mb-12">Cerita Bahagia Mereka</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6">
-            {testimonials.slice(0, 3).map((t, index) => {
+          <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 relative">
+            <AnimatePresence mode="popLayout">
+            {visibleTestimonials.map((t, index) => {
               if (index === 0) {
                 return (
-                  <div key={t.id} className="md:col-span-2 md:row-span-2 bg-primary-container/20 rounded-3xl p-8 flex flex-col justify-between soft-shadow">
+                  <motion.div 
+                    key={t.id + "-main"}
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 50 }}
+                    transition={{ duration: 0.5 }}
+                    className="md:col-span-2 md:row-span-2 bg-primary-container/20 rounded-3xl p-8 flex flex-col justify-between soft-shadow"
+                  >
                     <div>
                       <div className="flex text-secondary mb-6">
                          {[...Array(t.rating)].map((_, i) => <Star key={i} size={20} className="fill-current inline-block" />)}
@@ -214,11 +246,18 @@ export default function Home() {
                         <p className="text-sm text-on-surface-variant font-medium">{t.role}</p>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               } else {
                 return (
-                  <div key={t.id} className="md:col-span-2 bg-surface rounded-3xl p-6 border border-outline-variant/30 ambient-shadow">
+                  <motion.div 
+                    key={t.id + "-sub"}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="md:col-span-2 bg-surface rounded-3xl p-6 border border-outline-variant/30 ambient-shadow"
+                  >
                     <p className="text-base text-on-surface mb-6 leading-relaxed line-clamp-3">
                       "{t.text}"
                     </p>
@@ -231,10 +270,11 @@ export default function Home() {
                         <p className="text-xs text-on-surface-variant">{t.role}</p>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               }
             })}
+            </AnimatePresence>
           </div>
         </div>
       </section>
